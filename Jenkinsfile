@@ -16,17 +16,19 @@ pipeline{
             }
         }
 		stage('Publish'){
-			script {
-				def uploadSpec = 	"""{
-					"files": [
-						{
-						"pattern": "target/*.jar",
-						"target": "example-repo-local/HelloWorld/"
-						}
-					]
-				}"""
-				server.upload(uploadSpec)
-			}
+            steps{
+                script {
+                    def uploadSpec = 	"""{
+                        "files": [
+                            {
+                            "pattern": "target/*.jar",
+                            "target": "example-repo-local/HelloWorld/"
+                            }
+                        ]
+                    }"""
+                    server.upload(uploadSpec)
+                }
+            }
 
 		}
 	}
