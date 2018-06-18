@@ -2,6 +2,11 @@
 def server = Artifactory.server 'art'
 def rtMaven = Artifactory.newMavenBuild()
 
+// premerge
+    // compile -> unittest -> clover -> ~sonar~ -> ~package~ -> ~artifactory~
+// postmerge
+    // compile -> unittest -> clover -> sonar -> package -> artifactory
+
 pipeline{
     agent any
 
@@ -10,9 +15,9 @@ pipeline{
         jdk 'JDK8'
     }
     stages {
-        stage('Build'){
+        stage('Build && SonarQube Analysis'){
             steps{
-                sh 'mvn clean install'
+                sh 'mvn clean package sonar:sonar'
             }
         }
 		stage('Publish'){

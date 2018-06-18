@@ -1,0 +1,6 @@
+projectKey=com.gorup.HelloWorld:HelloWorld
+serverUrl=http://192.168.99.100:32773
+serverVersion=7.1.0.11001
+dashboardUrl=http://192.168.99.100:32773/dashboard/index/com.gorup.HelloWorld:HelloWorld
+ceTaskId=AWQUo0IUhkPTPoX3eVO9
+ceTaskUrl=http://192.168.99.100:32773/api/ce/task?id=AWQUo0IUhkPTPoX3eVO9
