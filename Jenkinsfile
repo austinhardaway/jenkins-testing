@@ -6,7 +6,7 @@ pipeline {
     }
 
     enviroment {
-
+        Artifactory.newServer url: 'http://localhost:8081/artifactory/', username: 'admin', password: 'password'
         UPLOAD_SPEC =  """{
                 "files": [
                     {
@@ -17,39 +17,32 @@ pipeline {
             """
     }
 
-    stages {
+    node {
+        def server
+        def buildInfo
+        def rtMaven
+
         stage ('Initialize') {
-            steps {
-                sh '''
-                    echo "PATH = ${PATH}"
-                    echo "M2_HOME = ${M2_HOME}"
-                ''' 
-            }
+            server = Artifactory.newServer url: 'http://localhost:8081/artifactory/', username: 'admin', password: 'password'
+            rtMaven = Artifactory.newMavenBuild()
+            rtMaven.tool = M3
+            rtMaven.deployer releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local', server: server 
+            rtMaven.resolver releaseRepo: 'libs-release', snapshotRepo: 'libs-snapshot', server: server
+            rtMaven.deployer.deployArtifacts = false // Disable artifacts deployment during Maven run
+            buildInfo = Artifactory.newBuildInfo()
         }
-         stage('build') {
-            steps {
-                sh 'mvn -B -DskipTests clean package'
-            }
+         stage('Test') {
+            rtMaven.run pom: './pom.xml', goals: 'clean test'
         }
-        stage('Test') {
-            steps {
-                sh 'mvn test'
-            }
-            post {
-                always {
-                    junit 'target/surefire-reports/*.xml'
-                }
-            }
+        stage('Install') {
+            rtMaven.run pom: './pom.xml', goals: 'install', buildInfo: buildInfo
+
         }
-        stage('Deliver') { 
-            steps {
-                sh './jenkins/scripts/deliver.sh' 
-            } 
+        stage('Deploy') { 
+            rtMaven.deployer.deployArtifacts buildInfo
         }
         stage('Publish to Artifactory'){
-            steps {
-                (Artifactory.newServer url: 'http://localhost:8081/artifactory/', username: 'admin', password: 'password').upload($UPLOAD_SPEC)
-            }
+           server.publishBuildInfo buildInfo
         }
     }
 }
