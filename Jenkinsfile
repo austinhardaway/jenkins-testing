@@ -31,7 +31,22 @@ pipeline {
         stage('Deliver') { 
             steps {
                 sh './jenkins/scripts/deliver.sh' 
-            }
+            } 
+        }
+        stage('Publish to Artifactory'){
+
+            def server = Artifactory.newServer url: 'http://localhost:8081/artifactory/', username: 'admin', password: 'password'
+
+            def uploadSpec =  """{
+                    "files": [
+                        {
+                            "patern": "target/HelloWorld*.jar"
+                        }
+                    ]
+                }
+                """
+
+            server.upload(uploadSpec)
         }
     }
 }
