@@ -4,6 +4,19 @@ pipeline {
         maven 'M3'
         jdk 'JDK8'
     }
+
+    enviroment {
+
+        UPLOAD_SPEC =  """{
+                "files": [
+                    {
+                        "patern": "target/HelloWorld*.jar"
+                    }
+                ]
+            }
+            """
+    }
+
     stages {
         stage ('Initialize') {
             steps {
@@ -35,18 +48,7 @@ pipeline {
         }
         stage('Publish to Artifactory'){
             steps {
-                def server = Artifactory.newServer url: 'http://localhost:8081/artifactory/', username: 'admin', password: 'password'
-
-                def uploadSpec =  """{
-                        "files": [
-                            {
-                                "patern": "target/HelloWorld*.jar"
-                            }
-                        ]
-                    }
-                    """
-
-                server.upload(uploadSpec)
+                (Artifactory.newServer url: 'http://localhost:8081/artifactory/', username: 'admin', password: 'password').upload($UPLOAD_SPEC)
             }
         }
     }
