@@ -1,10 +1,5 @@
 #!groovy
 node {
-    tools {
-        maven 'M3'
-        jdk 'JDK8'
-    }
-
     stages {
         def server
         def buildInfo
