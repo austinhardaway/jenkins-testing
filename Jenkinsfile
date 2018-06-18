@@ -5,18 +5,6 @@ pipeline {
         jdk 'JDK8'
     }
 
-    enviroment {
-        Artifactory.newServer url: 'http://localhost:8081/artifactory/', username: 'admin', password: 'password'
-        UPLOAD_SPEC =  """{
-                "files": [
-                    {
-                        "patern": "target/HelloWorld*.jar"
-                    }
-                ]
-            }
-            """
-    }
-
     node {
         def server
         def buildInfo
