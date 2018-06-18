@@ -1,4 +1,7 @@
 #!groovy
+def server = Artifactory.server 'art'
+def rtMaven = Artifactory.newMavenBuild()
+
 pipeline{
     agent any
 
@@ -12,5 +15,20 @@ pipeline{
                 sh 'mvn clean install'
             }
         }
-    }
+		stage('Publish'){
+			script {
+				def uploadSpec = 	"""{
+					"files": [
+						{
+						"pattern": "target/*.jar",
+						"target": "example-repo-local/HelloWorld/"
+						}
+					]
+				}"""
+				server.upload(uploadSpec)
+			}
+
+		}
+	}
+
 }
