@@ -1,6 +1,6 @@
 #!groovy
 node {
-    stages {
+    
         def server
         def buildInfo
         def rtMaven
