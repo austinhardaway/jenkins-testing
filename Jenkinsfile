@@ -34,19 +34,20 @@ pipeline {
             } 
         }
         stage('Publish to Artifactory'){
+            steps {
+                def server = Artifactory.newServer url: 'http://localhost:8081/artifactory/', username: 'admin', password: 'password'
 
-            def server = Artifactory.newServer url: 'http://localhost:8081/artifactory/', username: 'admin', password: 'password'
+                def uploadSpec =  """{
+                        "files": [
+                            {
+                                "patern": "target/HelloWorld*.jar"
+                            }
+                        ]
+                    }
+                    """
 
-            def uploadSpec =  """{
-                    "files": [
-                        {
-                            "patern": "target/HelloWorld*.jar"
-                        }
-                    ]
-                }
-                """
-
-            server.upload(uploadSpec)
+                server.upload(uploadSpec)
+            }
         }
     }
 }
