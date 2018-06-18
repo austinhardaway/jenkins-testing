@@ -1,6 +1,5 @@
 #!groovy
-pipeline {
-    agent any
+node {
     tools {
         maven 'M3'
         jdk 'JDK8'
